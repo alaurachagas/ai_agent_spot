@@ -15,10 +15,8 @@ docker run \
     --env="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v "$HOME/.Xauthority:/root/.Xauthority:rw" \
-    -v "$(pwd)":/workspace \
-    -v $(pwd)/../overlay_ws/src:/overlay_ws/src \
     --name agent \
-    ai_agent-spot:main \
+    ai-agent_spot:main \
     bash
 
 

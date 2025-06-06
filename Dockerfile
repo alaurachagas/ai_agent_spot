@@ -64,24 +64,24 @@ RUN pip install --no-cache-dir \
 
 # Set up ROS 2 Workspaces
 # Build colcon_ws
-WORKDIR /colcon_ws
-COPY colcon_ws/src/ /colcon_ws/src/
-RUN apt-get update && rosdep update && \
-    rosdep install --from-paths /colcon_ws/src --ignore-src -r -y
-RUN source /opt/ros/humble/setup.bash && colcon build --symlink-install
+# COPY colcon_ws/src/ /colcon_ws/src/
+# WORKDIR /colcon_ws
+# RUN apt-get update && rosdep update && \
+#     rosdep install --from-paths /colcon_ws/src --ignore-src -r -y
+# RUN source /opt/ros/humble/setup.bash && colcon build --symlink-install
 
 # Build overlay_ws
+COPY ./overlay_ws/src/ /overlay_ws/src/
 WORKDIR /overlay_ws
-COPY overlay_ws/src/ /overlay_ws/src/
-RUN echo "📁 Overlay WS contents:" && ls -l /overlay_ws && echo "📁 /overlay_ws/src:" && ls -l /overlay_ws/src && echo "📁 Recursive contents:" && find /overlay_ws/src
 RUN apt-get update && rosdep update && \
     rosdep install --from-paths /overlay_ws/src --ignore-src -r -y
-RUN source /colcon_ws/install/setup.bash && colcon build --symlink-install
+# RUN source /colcon_ws/install/setup.bash && colcon build --symlink-install
+RUN source /opt/ros/humble/setup.bash && colcon build --symlink-install
 
 
 # Source in bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
-RUN echo "source /colcon_ws_ws/install/setup.bash" >> /root/.bashrc
+# RUN echo "source /colcon_ws_ws/install/setup.bash" >> /root/.bashrc
 RUN echo "source /overlay_ws/install/setup.bash" >> /root/.bashrc
 
 # Copy CycloneDDS Config for ROS 2 Middleware
