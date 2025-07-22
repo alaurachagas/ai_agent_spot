@@ -5,16 +5,28 @@ from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from std_msgs.msg import String
 from spot_agent.tools.llm import get_llm
 from .agent import SpotAgent
+from spot_agent.tools.tools_system import tools_ros
+from spot_agent.prompts.task_prompts import test_prompt
 
 
 class Agent(Node):
     def __init__(self):
         super().__init__("Spot_Agent")
         qos_profile = QoSProfile(depth=1, durability=QoSDurabilityPolicy.VOLATILE)
-        self.subscription = self.create_subscription(String, "transcription_text", self.agent_callback , qos_profile)
+        
+        self.subscription = self.create_subscription(
+            String,
+            "transcription_text",
+            self.agent_callback ,
+            qos_profile
+        )
 
         # Instantiate the Agent
-        self.agent = SpotAgent(llm=get_llm())
+        self.agent = SpotAgent(
+            llm=get_llm(),
+            tools=tools_ros,
+            task_prompts=test_prompt
+        )
         
         self.get_logger().info("Spot Agent initialised and waiting for messages ...")
         self.message_recieved = False

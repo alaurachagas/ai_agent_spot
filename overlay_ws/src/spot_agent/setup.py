@@ -22,8 +22,8 @@ setup(
     entry_points={
         'console_scripts': [
             'agent = spot_agent.agent.agent_node:main'
-            'tool_a = spot_agent.tools.tool_a_node:main'
-            'tool_b = spot_agent.tools.tool_b_node:main'
+            #'tool_a = spot_agent.tools.tool_a_node:main'
+            #'tool_b = spot_agent.tools.tool_b_node:main'
 
         ],
     },

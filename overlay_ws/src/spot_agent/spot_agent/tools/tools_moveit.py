@@ -147,35 +147,20 @@ def launch_the_fake_robot():
         print("Error launching the terminator: ", e)
         
         
-@tool
-def launch_the_robot():
-    """
-    Launches and connects to the real robot
-    """
-    script_path = os.path.join(SCRIPT_DIR, "robot_launch.sh")
-    try: 
-        subprocess.Popen(["terminator", 
-                          "-e", 
-                          f"bash -c 'source /opt/ros/humble/setup.bash && {script_path}; exec bash'"])
-        print("Robot launched in a new terminal")
-    except Exception as e:
-        print("Error launching the terminator: ", e)
+# @tool
+# def launch_the_robot():
+#     """
+#     Launches and connects to the real robot
+#     """
+#     script_path = os.path.join(SCRIPT_DIR, "robot_launch.sh")
+#     try: 
+#         subprocess.Popen(["terminator", 
+#                           "-e", 
+#                           f"bash -c 'source /opt/ros/humble/setup.bash && {script_path}; exec bash'"])
+#         print("Robot launched in a new terminal")
+#     except Exception as e:
+#         print("Error launching the terminator: ", e)
         
-        
-@tool
-def launch_the_task_constructor ():
-    """
-    Runs the stack for generating grasps and picking up objects in field of view
-    """
-    script_path = os.path.join(SCRIPT_DIR, "pick_n_place.sh")
-    try: 
-        subprocess.Popen(["terminator", 
-                          "-e", 
-                          f"bash -c 'source /opt/ros/humble/setup.bash && {script_path}; exec bash'"])
-        print("Pick and Place node launched in a new terminal")
-    except Exception as e:
-        print("Error launching the terminator: ", e)  
-
 
 @tool 
 def execute_the_motion_plan ():
@@ -211,18 +196,16 @@ def stop():
         except subprocess.CalledProcessError:
             pass
 
-
 def tools_moveit () -> list[Tool]:
     return [rotate_the_gripper_anticlockwise,
             rotate_the_gripper_clockwise,
-            launch_the_task_constructor,
             execute_the_motion_plan,
             describe_what_you_see,
             move_to_zero_position, 
             launch_the_fake_robot,
             move_to_retract_pose,
             move_to_home_pose,
-            launch_the_robot,
+            #launch_the_robot,
             move_downwards,
             move_backward,
             close_gripper,
