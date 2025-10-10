@@ -4,8 +4,7 @@ import subprocess
 import time
 from typing import List, Optional, Tuple
 
-from langchain.agents import tool
-from rclpy.logging import get_logging_directory
+from langchain_core.tools import tool
 
 def execute_ros_command(command: str) -> Tuple[bool, str]:
     """
@@ -139,7 +138,7 @@ def ros2_topic_echo(
 
     return {"success": True}
 
-def tools_ros () -> list[Tool]:
+def tools_ros ():
     return [
         ros2_topic_echo,
         ros2_topic_list,

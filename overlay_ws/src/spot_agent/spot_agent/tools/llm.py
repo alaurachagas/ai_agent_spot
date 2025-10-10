@@ -1,5 +1,5 @@
 from langchain_ollama import ChatOllama
-from .agent_tools import get_tools
+from .tools_spot import get_tools
 
 language_model = "llama3.1"
 language_model_temperature = 0.8

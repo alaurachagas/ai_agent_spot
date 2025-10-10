@@ -44,7 +44,7 @@ class SpotAgent:
 
         # 3) Load your Spot-specific tools
         #    If you passed in a custom `tools` list, use that; else use default get_tools()
-        self.tools = tools if tools is not None else get_tools()
+        self.tools = get_tools()
 
         # 4) Build merged prompts (generic + task)
         self.prompts = self._get_prompts(task_prompts)

@@ -90,7 +90,7 @@ test_prompt = RobotSystemPrompts(
     critical_instructions=(
         "You are performing a test of your functionality. "
         "You should be able to excecute three ROS2 calls. When asked you should try to execute them. "
-        "Always give the output of the tool call as answer with your two cents."
+        "Always give the output of the tool call as answer, adding your two cents."
     ),
     mission_and_objectives=(
         "Your mission is to test you capabilities, with tool calling and interpretation."
