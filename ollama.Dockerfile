@@ -1,6 +1,5 @@
 # Use ROS 2 Humble as Base
-FROM osrf/ros:humble-desktop
-
+FROM ad8857/ros-llm:llama3.1-8b
 # Use Bash instead of Dash for better compatibility
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
@@ -37,9 +36,6 @@ RUN source /opt/ros/humble/setup.bash && colcon build --symlink-install
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 # RUN echo "source /colcon_ws_ws/install/setup.bash" >> /root/.bashrc
 RUN echo "source /overlay_ws/install/setup.bash" >> /root/.bashrc
-
-# Copy CycloneDDS Config for ROS 2 Middleware
-COPY cyclonedds/config.xml /config.xml
 
 # Copy Entry Point Scripts
 COPY entrypoint_scripts/ /entrypoint_scripts
