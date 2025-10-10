@@ -1,0 +1,25 @@
+$ ros2 topic info /goal_pose
+
+Type: geometry_msgs/msg/PoseStamped
+Publisher count: 1
+Subscription count: 1
+
+
+$ ros2 topic echo /goal_pose
+
+header:
+  stamp:
+    sec: 1760087734
+    nanosec: 63164722
+  frame_id: map
+pose:
+  position:
+    x: -1.9015321731567383
+    y: 9.199657440185547
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.9191385639501122
+    w: 0.3939343857290521
+---
