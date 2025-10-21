@@ -23,6 +23,22 @@ RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
   && rm -rf /var/lib/apt/lists/*
 
+RUN pip install --no-cache-dir --pre -U \
+    langchain==1.0.0 \
+    langchain-core==1.0.0 \
+    langchain-anthropic==1.0.0 \
+    langchain-aws==1.0.0 \
+    langchain-openai==1.0.0 \
+    langchain_ollama==1.0.0 \
+    langgraph==1.0.0 \
+    langgraph-sdk==0.2.9 \
+    langgraph-supervisor==0.0.28 \
+    langgraph-swarm==0.0.2 \
+    langchain-mcp-adapters==0.1.11 \
+    langmem==0.0.28 \
+    agentevals==0.0.9 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Build overlay_ws
 COPY ./overlay_ws/src/ /overlay_ws/src/
 WORKDIR /overlay_ws

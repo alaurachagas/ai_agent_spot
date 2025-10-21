@@ -3,11 +3,14 @@ import rclpy.executors
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from std_msgs.msg import String
-from spot_agent.tools.llm import get_llm
-from .agent import SpotAgent
-from spot_agent.tools.tools_system import tools_ros
-from spot_agent.prompts.task_prompts import test_prompt
 
+from langchain.agents import create_agent
+from langchain_core.messages import HumanMessage
+
+from ..prompts.get_prompts import get_prompts
+from .llm import get_ollama_model
+from ..tools.tools_spot import get_tools
+from ..prompts.system_prompts import generic_system_prompts
 
 class Agent(Node):
     def __init__(self):
@@ -21,11 +24,15 @@ class Agent(Node):
             qos_profile
         )
 
+        # Fix to tools error
+        my_tools=get_tools()
+        my_model=get_ollama_model()
+        my_prompts=get_prompts(generic_system_prompts)
         # Instantiate the Agent
-        self.agent = SpotAgent(
-            llm=get_llm(),
-            tools=tools_ros,
-            task_prompts=test_prompt
+        self.agent = create_agent(
+        model=my_model,
+        system_prompt=my_prompts,
+        tools=my_tools
         )
         
         self.get_logger().info("Spot Agent initialised and waiting for messages ...")
@@ -45,8 +52,8 @@ class Agent(Node):
         
         # Invoke the agent and handle the response
         try:
-            self.get_logger().info(f"Invoking Agent with the query: [{msg.data}]")
-            response = self.agent.invoke(msg.data)
+            self.get_logger().info(f"Invoking Agent with the query: {msg.data}")
+            response = self.agent.invoke({"messages": [HumanMessage(content=msg.data)]})
             self.get_logger().info(f"Agent Response: {response}")
         except Exception as e:
             self.get_logger().error(f"Error executing tool: {e}")

@@ -138,10 +138,9 @@ def ros2_topic_echo(
 
     return {"success": True}
 
-def tools_ros ():
+def tools_ros():
     return [
         ros2_topic_echo,
         ros2_topic_list,
         ros2_node_list
     ]
-

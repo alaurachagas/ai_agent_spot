@@ -82,7 +82,7 @@ def walk_forward_robot(dist: float = 0.0):
     This function expects the distance in meters to walk
     """
     current_pose = get_current_pose()
-    new_pose =calculate_move_forward_pose(current_pose)
+    new_pose = calculate_move_forward_pose(current_pose)
     publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
 
 def tools_nav ():
