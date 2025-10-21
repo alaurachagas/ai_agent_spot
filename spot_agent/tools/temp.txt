@@ -1,0 +1,58 @@
+[
+    StructuredTool(
+        name='ros2_topic_echo', 
+        description='Echoes the contents of a specific ROS2 topic.\n\n:
+        param topic: The name of the ROS topic to echo.\n:
+        param count: The number of messages to echo. Valid range is 1-10.\n:
+        param return_echoes: If True, return the messages as a list with the response.\n:
+        param delay: Time to wait between each message in seconds.\n:
+        param timeout: Max time to wait for a message before timing out.\n\n:
+        note: Do not set return_echoes to True if the number of messages is large.\n       
+            This will cause the response to be too large and may cause the tool to fail.', 
+        args_schema=<class 'langchain_core.utils.pydantic.ros2_topic_echo'>, 
+        func=<function ros2_topic_echo at 0x7f08e71d3ac0>
+    ), 
+    StructuredTool(
+        name='ros2_topic_list', 
+        description='Get a list of ROS2 topics.\n\n:
+        param pattern: A regular expression pattern to filter the list of topics.', 
+        args_schema=<class 'langchain_core.utils.pydantic.ros2_topic_list'>, 
+        func=<function ros2_topic_list at 0x7f08e71d3910>
+    ), 
+    StructuredTool(
+        name='ros2_node_list', 
+        description='Get a list of ROS2 nodes running on the system.\n\n:
+        param pattern: A regular expression pattern to filter the list of nodes.', 
+        args_schema=<class 'langchain_core.utils.pydantic.ros2_node_list'>, 
+        func=<function ros2_node_list at 0x7f08e71d3880>
+    ), 
+    StructuredTool(
+        name='walk_forward_robot', 
+        description='Walk in a straght line a defined distance\n
+                     This function expects the distance in meters to walk', 
+        args_schema=<class 'langchain_core.utils.pydantic.walk_forward_robot'>, 
+        func=<function walk_forward_robot at 0x7f08e4b20dc0>
+    ), 
+    StructuredTool(
+        name='turn_robot', 
+        description='Turns the robot on its exis.\n
+                     This function expects the angle in degrees to turn.', 
+        args_schema=<class 'langchain_core.utils.pydantic.turn_robot'>, 
+        func=<function turn_robot at 0x7f08e4b20ca0>
+    ), 
+    StructuredTool(
+        name='save_location_tool', 
+        description='Save the current robot pose into a JSON file.\n
+                     This function expects the name of the location to be saved.', 
+        args_schema=<class 'langchain_core.utils.pydantic.save_location_tool'>, 
+        func=<function save_location_tool at 0x7f08e4b20c10>
+    ), 
+    StructuredTool(
+        name='move_to_goal', 
+        description='Navigates the robot to a saved goal pose.\n
+                     If none location is given, list all saved locations\n
+                     This function expects a named location.', 
+        args_schema=<class 'langchain_core.utils.pydantic.move_to_goal'>, 
+        func=<function move_to_goal at 0x7f08e71d3e20>
+    )
+]
