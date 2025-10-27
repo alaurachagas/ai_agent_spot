@@ -11,6 +11,8 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/spot_agent.launch.py']),
+        ('share/' + package_name + '/saved_data', ['saved_data/saved_locations.json']),  # Directory for saved locations
+        ('share/' + package_name + '/saved_data', ['saved_data/saved_arm_poses.json']),  # Directory for saved arm poses
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -21,7 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'agent = spot_agent.agent.agent_node:main'
+            'agent = spot_agent.agent.agent_node:main',
+            'save_location = spot_agent.nodes.save_location:main',
+            'current_pose = spot_agent.nodes.current_pose:main',
         ],
     },
 )
