@@ -7,6 +7,8 @@ from ament_index_python.packages import get_package_share_directory
 from ..nodes.quarternion import calculate_move_forward_pose, calculate_turn_pose
 from ..nodes.current_pose import get_current_pose
 from ..nodes.pub_n_sub import publish_to
+from geometry_msgs.msg import PoseStamped
+
 
 
 @tool
@@ -38,8 +40,8 @@ def move_to_goal(goal_location: str="home"):
     if goal_location not in saved_data:
         return f"Location '{goal_location}' not found in saved locations. Use 'go_to_location' without name to list available."
 
-    new_pose = saved_data[goal_location]
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    goal_pose = saved_data[goal_location]
+    publish_to(PoseStamped,"/goal_pose",goal_pose)
 
 
 @tool
@@ -72,8 +74,8 @@ def turn_robot(angle: float = 0.0):
     This function expects the angle in degrees to turn.
     """
     current_pose = get_current_pose()
-    new_pose = calculate_turn_pose(current_pose)
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    new_pose = calculate_turn_pose(current_pose, angle)
+    publish_to(PoseStamped,"/goal_pose",new_pose)
 
 @tool
 def walk_forward_robot(dist: float = 0.0):
@@ -82,8 +84,8 @@ def walk_forward_robot(dist: float = 0.0):
     This function expects the distance in meters to walk
     """
     current_pose = get_current_pose()
-    new_pose = calculate_move_forward_pose(current_pose)
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    new_pose = calculate_move_forward_pose(current_pose, dist)
+    publish_to(PoseStamped,"/goal_pose",new_pose)
 
 def tools_nav ():
     return [

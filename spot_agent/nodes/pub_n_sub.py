@@ -19,8 +19,8 @@ class AgentPublisher(Node):
         
     def publish_callback (self, data):
         msg = self.type()
-        self.publisher.publish(msg)
-        if self.type == Float64MultiArray or self.type == Bool:
+
+        if self.type in (Float64MultiArray, Bool):
             msg.data = data
 
         elif self.type == PoseStamped:
@@ -100,16 +100,18 @@ class AgentSubscriber(Node):
 
 def publish_to(type_name, topic_name: str, pose: dict = None, coordinates: list = None, msg: bool = None) -> None:
     """
-    Publishes Coordinates to MoveIt
+    Publishes Coordinates to NAV2 or MoveIt2
 
     Args:
         pose (dict) = None : Desired pose to publish
         coordinates (list) = None :  Desired coordinates to publish
         msg (bool) = None : Desired Bool Message to publish
     """
+    publisher_node = None
     try:
         # Initialise the ROS2 Node to publish the coordinates
         publisher_node = AgentPublisher(type=type_name, topic=topic_name)
+
         if type_name == Float64MultiArray:
             publisher_node.publish_callback(coordinates)
         elif type_name == Bool:
@@ -120,13 +122,13 @@ def publish_to(type_name, topic_name: str, pose: dict = None, coordinates: list 
         # Spin the Node to keep it publishing
         rclpy.spin_once(publisher_node, timeout_sec=0.1)
 
-        # Destroy Node
-        publisher_node.destroy_node()
     except Exception as e:
         print(f"Error Publishing Coordinates to Robot: {e}")
         return
     finally:
-        publisher_node.destroy_node()
+        if publisher_node is not None:
+            publisher_node.destroy_node()
+
     
 
 def subscribe_to (topic_name: str, type_name):

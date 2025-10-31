@@ -1,44 +1,40 @@
-#!/usr/bin/env python3
+# current_pose.py
 import rclpy
 from rclpy.time import Time
 from rclpy.duration import Duration
+from rclpy.executors import SingleThreadedExecutor
 import tf2_ros
+from tf2_ros import LookupException
 
-def get_current_pose(target_frame: str = "map", source_frame: str = "body", timeout_sec: float = 1.0) -> dict:
-    """
-    Returns the current robot pose as a dict.
-    Reads TF transform target_frame <- source_frame (default: map <- body).
-    """
-    # Create an isolated ROS 2 context so this works from any plain Python script
+def get_current_pose(target_frame: str = "map", source_frame: str = "body", timeout_sec: float = 2.0) -> dict:
+    """Return pose from TF: target_frame <- source_frame (e.g., map <- body)."""
     ctx = rclpy.Context()
     rclpy.init(context=ctx)
     node = rclpy.create_node("tmp_pose_reader", context=ctx)
 
+    exec_ = SingleThreadedExecutor(context=ctx)
+    exec_.add_node(node)
+
     try:
-        tf_buffer = tf2_ros.Buffer()
-        tf_listener = tf2_ros.TransformListener(tf_buffer, node)
+        buf = tf2_ros.Buffer()
+        _listener = tf2_ros.TransformListener(buf, node)
 
-        # Spin until we get the transform or timeout
-        trans = tf_buffer.lookup_transform(
-            target_frame,
-            source_frame,
-            Time(),  # latest available
-            timeout=Duration(seconds=timeout_sec),
-        )
+        deadline = node.get_clock().now() + Duration(seconds=timeout_sec)
+        while node.get_clock().now() < deadline:
+            exec_.spin_once(timeout_sec=0.05)  # <-- use our executor, not the global one
+            if buf.can_transform(target_frame, source_frame, Time()):
+                break
 
-        pos = trans.transform.translation
-        ori = trans.transform.rotation
+        if not buf.can_transform(target_frame, source_frame, Time()):
+            raise LookupException(f"Transform {target_frame} <- {source_frame} not available within {timeout_sec}s")
 
+        t = buf.lookup_transform(target_frame, source_frame, Time())
+        p, q = t.transform.translation, t.transform.rotation
         return {
-            "position": {"x": float(pos.x), "y": float(pos.y), "z": float(pos.z)},
-            "orientation": {
-                "x": float(ori.x),
-                "y": float(ori.y),
-                "z": float(ori.z),
-                "w": float(ori.w),
-            },
+            "position": {"x": float(p.x), "y": float(p.y), "z": float(p.z)},
+            "orientation": {"x": float(q.x), "y": float(q.y), "z": float(q.z), "w": float(q.w)},
         }
-
     finally:
+        exec_.remove_node(node)
         node.destroy_node()
         rclpy.shutdown(context=ctx)

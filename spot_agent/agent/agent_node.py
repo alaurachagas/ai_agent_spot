@@ -10,7 +10,7 @@ from langchain_core.messages import HumanMessage
 from ..prompts.get_prompts import get_prompts
 from .llm import get_ollama_model
 from ..tools.tools_spot import get_tools
-from ..prompts.system_prompts import generic_system_prompts
+from ..prompts.system_prompts import generic_system_prompts_test
 
 class Agent(Node):
     def __init__(self):
@@ -27,7 +27,7 @@ class Agent(Node):
         # Fix to tools error
         my_tools=get_tools()
         my_model=get_ollama_model()
-        my_prompts=get_prompts(generic_system_prompts)
+        my_prompts=get_prompts(generic_system_prompts_test)
         # Instantiate the Agent
         self.agent = create_agent(
         model=my_model,
