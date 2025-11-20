@@ -42,7 +42,8 @@ TOOLS AVAILABLE:
 - walk_forward_robot(dist: float): Walk forward a specified distance in meters.
 - turn_robot(angle: float): Turn the robot by a specified angle in degrees.
 - save_location_tool(name: str): Save the current robot pose with a given name.
-- move_to_goal(goal_location: str): Move the robot to a previously named saved location.
+- move_to_goal(goal_location: str): Move the robot to a previously named saved location. Give no arguments to list available locations.
 - ros2_node_list(): Get a list of ROS2 nodes running on the system.
 - ros2_topic_list(): Get a list of the current ROS2 topics.
-- ros2_topic_echo(topic: str) Get the latest message from a specified ROS2 topic."""
+- ros2_topic_echo(topic: str) Get the latest message from a specified ROS2 topic.
+- get_sequence(seq_name: str): Retrieve a predefined movement sequence by name. Give no arguments to list available sequences."""

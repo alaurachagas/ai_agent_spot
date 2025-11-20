@@ -7,8 +7,6 @@ from ament_index_python.packages import get_package_share_directory
 from ..nodes.quarternion import calculate_move_forward_pose, calculate_turn_pose
 from ..nodes.current_pose import get_current_pose
 from ..nodes.pub_n_sub import publish_to
-from geometry_msgs.msg import PoseStamped
-
 
 
 @tool
@@ -40,8 +38,8 @@ def move_to_goal(goal_location: str="home"):
     if goal_location not in saved_data:
         return f"Location '{goal_location}' not found in saved locations. Use 'go_to_location' without name to list available."
 
-    goal_pose = saved_data[goal_location]
-    publish_to(PoseStamped,"/goal_pose",goal_pose)
+    new_pose = saved_data[goal_location]
+    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
 
 
 @tool
@@ -74,8 +72,8 @@ def turn_robot(angle: float = 0.0):
     This function expects the angle in degrees to turn.
     """
     current_pose = get_current_pose()
-    new_pose = calculate_turn_pose(current_pose, angle)
-    publish_to(PoseStamped,"/goal_pose",new_pose)
+    new_pose = calculate_turn_pose(current_pose)
+    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
 
 @tool
 def walk_forward_robot(dist: float = 0.0):
@@ -84,15 +82,51 @@ def walk_forward_robot(dist: float = 0.0):
     This function expects the distance in meters to walk
     """
     current_pose = get_current_pose()
-    new_pose = calculate_move_forward_pose(current_pose, dist)
-    publish_to(PoseStamped,"/goal_pose",new_pose)
+    new_pose =calculate_move_forward_pose(current_pose)
+    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+
+@tool
+def get_sequence(seq_name: str = ""):
+    """
+    Retives a sequence of tool calls necessary to execute a sequence.
+    This function expects the name of the sequence (string)
+    """
+    file_path = os.path.join(
+            get_package_share_directory('spot_agent'),
+            'saved_data',
+            'saved_sequences.json'
+        )
+    
+    if not os.path.exists(file_path):
+        return "Saved sequences file not found."
+
+    with open(file_path, 'r') as f:
+        saved_data = json.load(f)
+
+    if seq_name == "" or seq_name.lower() == "list":
+        # Just list all saved locations
+        if not saved_data:
+            return "No Sequence saved yet."
+        locations = "\n".join(f"- {loc}" for loc in saved_data.keys())
+        return f"Saved Sequence:\n{locations}"
+    
+    if seq_name not in saved_data:
+        return f"Sequence '{seq_name}' not found in saved locations. Use 'get_sequence' without name to list available."
+    
+    seq = saved_data[seq_name]
+    return {
+        "name": seq_name,
+        "description": seq.get("description", ""),
+        "steps": seq["steps"],
+    }
 
 def tools_nav ():
     return [
         walk_forward_robot,
         turn_robot,
         save_location_tool,
-        move_to_goal
+        move_to_goal,
+        get_sequence
     ]
     
 
