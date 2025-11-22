@@ -7,6 +7,7 @@ from ament_index_python.packages import get_package_share_directory
 from ..nodes.quarternion import calculate_move_forward_pose, calculate_turn_pose
 from ..nodes.current_pose import get_current_pose
 from ..nodes.pub_n_sub import publish_to
+from ..nodes.nav2_feedback import navigate_to_pose_blocking
 
 
 @tool
@@ -39,7 +40,15 @@ def move_to_goal(goal_location: str="home"):
         return f"Location '{goal_location}' not found in saved locations. Use 'go_to_location' without name to list available."
 
     new_pose = saved_data[goal_location]
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
+    return {
+        "command": "move_to_goal",
+        "nav2_status": nav_result["status"],
+        "navigation_time_sec": nav_result["navigation_time_sec"],
+        "distance_remaining": nav_result["distance_remaining"],
+        "recoveries": nav_result["number_of_recoveries"],
+        "error_msg": nav_result["error_msg"],
+    }
 
 
 @tool
@@ -73,7 +82,16 @@ def turn_robot(angle: float = 0.0):
     """
     current_pose = get_current_pose()
     new_pose = calculate_turn_pose(current_pose)
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
+    return {
+        "command": "turn_robot",
+        "requested_angle_deg": angle,
+        "nav2_status": nav_result["status"],
+        "navigation_time_sec": nav_result["navigation_time_sec"],
+        "distance_remaining": nav_result["distance_remaining"],
+        "recoveries": nav_result["number_of_recoveries"],
+        "error_msg": nav_result["error_msg"],
+    }
 
 @tool
 def walk_forward_robot(dist: float = 0.0):
@@ -83,7 +101,16 @@ def walk_forward_robot(dist: float = 0.0):
     """
     current_pose = get_current_pose()
     new_pose =calculate_move_forward_pose(current_pose)
-    publish_to("geometry_msgs/msg/PoseStamped","/goal_pose",new_pose)
+    nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
+    return {
+        "command": "walk_forward_robot",
+        "requested_distance_meters": dist,
+        "nav2_status": nav_result["status"],
+        "navigation_time_sec": nav_result["navigation_time_sec"],
+        "distance_remaining": nav_result["distance_remaining"],
+        "recoveries": nav_result["number_of_recoveries"],
+        "error_msg": nav_result["error_msg"],
+    }
 
 @tool
 def get_sequence(seq_name: str = ""):
