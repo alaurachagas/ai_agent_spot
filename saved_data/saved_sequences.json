@@ -41,5 +41,18 @@
         "args": { "angle_deg": 180 }
       }
     ]
+  },
+  "inspect_ros_pipeline": {
+    "description": "Inspect which ROS topics and nodes are active.",
+    "steps": [
+      {
+        "tool": "ros2_topic_list",
+        "args": {}
+      },
+      {
+        "tool": "ros2_node_list",
+        "args": {}  
+      }
+    ]
   }
 }
