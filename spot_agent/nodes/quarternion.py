@@ -82,8 +82,8 @@ class Quaternion:
 
     def vector_norm(self):
         w, v = self.get_axisangle()
-        return np.linalg.norm(v)
-    
+        return np.linalg.norm(v)  
+
 
 def main():
     # Exemple of implementation
@@ -163,3 +163,34 @@ def calculate_move_forward_pose(pose: dict, dist_m: float) -> dict:
         "orientation": dict(pose["orientation"]),  # unchanged
     }
     
+from geometry_msgs.msg import PoseStamped
+
+def dict_to_pose_stamped(pose_dict: dict, frame_id: str = "map") -> PoseStamped:
+    """
+    Convert a saved pose dictionary into a geometry_msgs/PoseStamped.
+    Expected format:
+    {
+        "position": {"x": ..., "y": ..., "z": ...},
+        "orientation": {"x": ..., "y": ..., "z": ..., "w": ...}
+    }
+    """
+    msg = PoseStamped()
+
+    # Frame
+    msg.header.frame_id = frame_id
+    # Use zero stamp (Nav2 accepts it), or override later using node.get_clock()
+    msg.header.stamp.sec = 0
+    msg.header.stamp.nanosec = 0
+
+    # Position
+    msg.pose.position.x = float(pose_dict["position"]["x"])
+    msg.pose.position.y = float(pose_dict["position"]["y"])
+    msg.pose.position.z = float(pose_dict["position"].get("z", 0.0))
+
+    # Orientation
+    msg.pose.orientation.x = float(pose_dict["orientation"]["x"])
+    msg.pose.orientation.y = float(pose_dict["orientation"]["y"])
+    msg.pose.orientation.z = float(pose_dict["orientation"]["z"])
+    msg.pose.orientation.w = float(pose_dict["orientation"]["w"])
+
+    return msg

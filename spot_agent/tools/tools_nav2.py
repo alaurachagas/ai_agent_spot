@@ -4,10 +4,21 @@ import subprocess
 
 from langchain_core.tools import tool
 from ament_index_python.packages import get_package_share_directory
-from ..nodes.quarternion import calculate_move_forward_pose, calculate_turn_pose
+from ..nodes.quarternion import calculate_move_forward_pose, calculate_turn_pose, dict_to_pose_stamped
 from ..nodes.current_pose import get_current_pose
 from ..nodes.pub_n_sub import publish_to
 from ..nodes.nav2_feedback import navigate_to_pose_blocking
+
+simulation = False
+
+@tool
+def set_simulation():
+    """
+    Sets the robot to simulation mode.
+    """
+    global simulation
+    simulation = True
+    return "Robot set to simulation mode."
 
 
 @tool
@@ -39,7 +50,7 @@ def move_to_goal(goal_location: str="home"):
     if goal_location not in saved_data:
         return f"Location '{goal_location}' not found in saved locations. Use 'go_to_location' without name to list available."
 
-    new_pose = saved_data[goal_location]
+    new_pose = dict_to_pose_stamped(saved_data[goal_location])
     nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
     return {
         "command": "move_to_goal",
@@ -80,8 +91,11 @@ def turn_robot(angle: float = 0.0):
     Turns the robot on its exis.
     This function expects the angle in degrees to turn.
     """
-    current_pose = get_current_pose()
-    new_pose = calculate_turn_pose(current_pose)
+    if simulation:
+        current_pose = get_current_pose("map", "base_link")
+    else:
+        current_pose = get_current_pose()
+    new_pose = dict_to_pose_stamped(calculate_turn_pose(current_pose, angle))
     nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
     return {
         "command": "turn_robot",
@@ -99,8 +113,11 @@ def walk_forward_robot(dist: float = 0.0):
     Walk in a straght line a defined distance
     This function expects the distance in meters to walk
     """
-    current_pose = get_current_pose()
-    new_pose =calculate_move_forward_pose(current_pose)
+    if simulation:
+        current_pose = get_current_pose("map", "base_link")
+    else:
+        current_pose = get_current_pose()
+    new_pose = dict_to_pose_stamped(calculate_move_forward_pose(current_pose, dist))
     nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
     return {
         "command": "walk_forward_robot",
@@ -149,6 +166,7 @@ def get_sequence(seq_name: str = ""):
 
 def tools_nav ():
     return [
+        set_simulation,
         walk_forward_robot,
         turn_robot,
         save_location_tool,

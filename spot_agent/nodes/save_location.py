@@ -9,6 +9,8 @@ import sys
 import time
 from ament_index_python.packages import get_package_share_directory
 
+simulation = False
+
 class SaveLocation(Node):
     def __init__(self, temp_name='unknown'):
         super().__init__('save_location_node')
@@ -20,12 +22,20 @@ class SaveLocation(Node):
     def save_location(self):
         try:
             now = rclpy.time.Time()
-            trans = self.tf_buffer.lookup_transform(
-                'map',
-                'body',
-                now,
-                timeout=rclpy.duration.Duration(seconds=5.0)
-            )
+            if simulation:
+                trans = self.tf_buffer.lookup_transform(
+                    'map',
+                    'base_link',
+                    now,
+                    timeout=rclpy.duration.Duration(seconds=5.0)
+                )
+            else:
+                trans = self.tf_buffer.lookup_transform(
+                    'map',
+                    'body',
+                    now,
+                    timeout=rclpy.duration.Duration(seconds=5.0)
+                )
 
             position = trans.transform.translation
             orientation = trans.transform.rotation

@@ -124,34 +124,14 @@ class Nav2BlockingClient(Node):
 
 def navigate_to_pose_blocking(pose: PoseStamped, timeout_sec: float = 600.0):
     """
-    Convenience function: init rclpy, run one navigation, shut down.
+    Convenience function: run one navigation, shut down.
 
     This is nice for your agent tools that just want a blocking call.
     """
-    rclpy.init()
     try:
         node = Nav2BlockingClient()
         result = node.go_to_pose_and_wait(pose, timeout_sec)
     finally:
         node.destroy_node()
-        rclpy.shutdown()
     return result
 
-
-if __name__ == "__main__":
-    # simple manual test with a hard-coded pose, if you want
-    from geometry_msgs.msg import PoseStamped
-
-    rclpy.init()
-    node = Nav2BlockingClient()
-
-    goal = PoseStamped()
-    goal.header.frame_id = "map"
-    goal.header.stamp = node.get_clock().now().to_msg()
-    goal.pose.position.x = 1.0
-    goal.pose.position.y = 0.0
-    goal.pose.orientation.w = 1.0
-
-    print(node.go_to_pose_and_wait(goal))
-    node.destroy_node()
-    rclpy.shutdown()
