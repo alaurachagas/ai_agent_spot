@@ -86,7 +86,7 @@ def save_location_tool(name: str = "unknown") -> str:
         return f"Exception while saving location: {str(e)}"
     
 @tool
-def turn_robot(angle: float = 0.0):
+def turn_robot(angle_deg: float = 0.0):
     """
     Turns the robot on its exis.
     This function expects the angle in degrees to turn.
@@ -95,11 +95,11 @@ def turn_robot(angle: float = 0.0):
         current_pose = get_current_pose("map", "base_link")
     else:
         current_pose = get_current_pose()
-    new_pose = dict_to_pose_stamped(calculate_turn_pose(current_pose, angle))
+    new_pose = dict_to_pose_stamped(calculate_turn_pose(current_pose, angle_deg))
     nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
     return {
         "command": "turn_robot",
-        "requested_angle_deg": angle,
+        "requested_angle_deg": angle_deg,
         "nav2_status": nav_result["status"],
         "navigation_time_sec": nav_result["navigation_time_sec"],
         "distance_remaining": nav_result["distance_remaining"],
@@ -108,7 +108,7 @@ def turn_robot(angle: float = 0.0):
     }
 
 @tool
-def walk_forward_robot(dist: float = 0.0):
+def walk_forward_robot(distance_m: float = 0.0):
     """
     Walk in a straght line a defined distance
     This function expects the distance in meters to walk
@@ -117,11 +117,11 @@ def walk_forward_robot(dist: float = 0.0):
         current_pose = get_current_pose("map", "base_link")
     else:
         current_pose = get_current_pose()
-    new_pose = dict_to_pose_stamped(calculate_move_forward_pose(current_pose, dist))
+    new_pose = dict_to_pose_stamped(calculate_move_forward_pose(current_pose, distance_m))
     nav_result = navigate_to_pose_blocking(new_pose, timeout_sec=600.0)
     return {
         "command": "walk_forward_robot",
-        "requested_distance_meters": dist,
+        "requested_distance_meters": distance_m,
         "nav2_status": nav_result["status"],
         "navigation_time_sec": nav_result["navigation_time_sec"],
         "distance_remaining": nav_result["distance_remaining"],
